@@ -42,11 +42,25 @@ function createLocation(newLocation, coordinate, name, description, north, east,
 return locationArray.push(newLocation)
 }
 
+/* Locations indices
+  0 = newLocation
+  1 = coordinate
+  2 = name
+  3 = description
+  4 = north
+  5 = east
+  6 = south
+  7 = west
+  8 = up
+  9 = down
+  10 = itemOne
+  11 = itemTwo
+  12 = itemThree
+ */
 
-//Locations
 let currentLocation = [z,x,y];
 createLocation("start", [0,9,9], "home", "Starting Point", "You look to the north", 'You look to the south', 'You look to the east', 'You look to the west', 'You look up', 'You look down', 'You see item one', 'You see item 2', 'You see item 3');
-createLocation("cemetary",[0,9,10], 'second position.', 'position 2');
+createLocation("secondPosition",[0,9,10], 'second position.', 'position 2', "" , "" , "" , "" ,"" ,"", "lobster");
 createLocation("cemetary",[0,9,11], 'cemetary', 'An old cemetary lies before you.');
 
 start();
@@ -182,20 +196,34 @@ async function go(text) {
       // If the locationArray Length has been exhausted, and i is undefined:
       } else if (locationArray[i] == undefined){
           console.log(`You don't see anything interesting...`); 
+          start();
       // If the coordinate has been discovered in the locationArray, display the description.
-      } else if (JSON.stringify(locationArray[i].coordinate) == JSON.stringify(playerLocation)) {
+      } else if (JSON.stringify(locationArray[i].coordinate) == JSON.stringify(playerLocation) && locationArray[i].item1) {
+        console.log(`You look around and see ${locationArray[i].description}. \n You also see a ${locationArray[i].item1}`);
+          start();
+        }
+        else if (JSON.stringify(locationArray[i].coordinate) == JSON.stringify(playerLocation)) {
           console.log(`You look around and see ${locationArray[i].description}`);
-      }
+          start();
+        }
     }
     // If the coordinate has been discovered in the locationArray at index 0, display the description.
+    if (JSON.stringify(locationArray[i].coordinate) == JSON.stringify(playerLocation) && locationArray[i].item1) {
+      console.log(`You look around and see ${locationArray[i].description}. \n You also see a ${locationArray[i].item1}`);
+      start();
+    }
     if (JSON.stringify(locationArray[i].coordinate) == JSON.stringify(playerLocation)) {
       console.log(`You look around and see ${locationArray[i].description}`);
+      start();
     }
     // If the coordinate hasn't been found at index 0, call the search function.
     else {
       search();
     }
   }
+
+
+
 
 // Use the ask function. Parse the text input to an array (separated by spaces?). Then look at the array for function words. If the array contains the word, do what needs to be done.
 
@@ -209,8 +237,8 @@ async function go(text) {
 
 
 // Add functionality to look in a direction.
-  process.exit();
 }
+// process.exit();
 
 /* //! Text Input State Machine
 class Command {
