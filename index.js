@@ -11,7 +11,6 @@ let z = 0;
 let x = 9;
 let y = 9;
 let playerLocation = [z, x, y];
-// let gameBoard = [];
 let i = 0;
 let commands = `\nMove around using "go", "walk", or "move"\nYou can try to move north, south, east, west, up, or down.\nTo return home, ask to "warp"\nLook around using "look".`
 let inventory = [];
@@ -58,7 +57,7 @@ return locationArray.push(newLocation)
   12 = itemThree
  */
 
-let currentLocation = [z,x,y];
+let currentLocation = [z,x,y]; // No longer read. Probably will delete.
 createLocation("start", [0,9,9], "home", "Starting Point", "You look to the north", 'You look to the south', 'You look to the east', 'You look to the west', 'You look up', 'You look down', '', '', '');
 createLocation("secondPosition",[0,9,10], 'second position.', 'position 2', "" , "" , "" , "" ,"" ,"", "lobster");
 createLocation("cemetary",[0,9,11], 'cemetary', 'An old cemetary lies before you.');
@@ -179,14 +178,22 @@ else if (input.includes("quit") || input.includes("exit")) {
 }
 
 // Take/pick up items:
+/* 
+Check to see if an item exists in the current location
+If it does, add it to the inventory and remove it from the current location object.
+*/
 else if (input.includes("take") || input.includes("pick")) {
-  let takeItemQuestion = await ask("Would you like to pick up?") 
-  if (takeItem == "y" || takeItemQuestion == "yes") {
-    take();
-  } else {
-    start() 
-  }
+  take();
 }
+
+// Use item
+
+/* 
+
+Check the inventory for the item
+If it's there, allow it to be used...
+
+*/
 
 // View Inventory:
 else if (input.includes("inventory") || input.includes("items")) {
@@ -208,10 +215,64 @@ else if (input.includes("exit" || input.includes("quit"))) {
     start();
   }
 }
+
 // Command not recognized:
 else {
   console.log(`\nI don't understand what you're saying.\n`)
   start()
+}
+
+// Take Items function:
+async function take() {
+  let i = 0;
+    async function search() {
+        i++
+        // Search the locationArray for the existence of the current location...
+        // If the currentLocation does not exist, repeat the search and i will increase by one:
+        if (i < locationArray.length && JSON.stringify(locationArray[i].coordinate) != JSON.stringify(playerLocation)) {
+            search()
+        // If the locationArray Length has been exhausted, and i is undefined:
+        } else if (locationArray[i] == undefined){
+            console.log(`There's nothing you can pick up...`); 
+            start();
+        // If the coordinate has been discovered in the locationArray, display the description.
+        } else if (JSON.stringify(locationArray[i].coordinate) == JSON.stringify(playerLocation) && locationArray[i].item1) {
+          let takeItemQuestion = await ask(`Would you like to pick up ${locationArray[i].item1}?`) 
+        if (takeItemQuestion == "y" || takeItemQuestion == "yes") {
+          console.log("inventory: ", inventory);
+          console.log("locationarray: ",locationArray[i].item1)
+          inventory.push(locationArray[i].item1);
+          console.log("inventory: ", inventory);
+          locationArray[i].item1 = "";
+          console.log("locationarray: ", locationArray[i].item1)
+          start();
+        } else {
+          start() 
+        }
+      }
+    }
+      if (JSON.stringify(locationArray[i].coordinate) == JSON.stringify(playerLocation) && locationArray[i].item1) {
+          let takeItemQuestion = await ask(`Would you like to pick up ${locationArray[i].item1}?`) 
+    if (takeItemQuestion == "y" || takeItemQuestion == "yes") {
+      console.log("inventory: ", inventory);
+      console.log("locationarray: ",locationArray[i].item1)
+      inventory.push(locationArray[i].item1);
+      console.log("inventory: ", inventory);
+      locationArray[i].item1 = "";
+      console.log("locationarray: ", locationArray[i].item1)
+    start();
+    } else {
+    start() 
+    }
+  }
+  // If the coordinate hasn't been found at index 0, call the search function.
+  else {
+    search();
+  }
+}
+
+async function drop() {
+
 }
 
 // Movement
@@ -348,21 +409,4 @@ async function go(text) {
       search();
     }
   }
-
-// 
-
-
-// Use the ask function. Parse the text input to an array (separated by spaces?). Then look at the array for function words. If the array contains the word, do what needs to be done.
-
-
-// if (input == "go") {
-//   let goTo = await ask ('Where would you like to go?') 
-//   go(goTo);
-// }
-
-// maybe... Use the ask function to feed information into a state machine, which will then call on the needed functions... 
-
-
-// Add functionality to look in a direction.
 }
-// process.exit();
