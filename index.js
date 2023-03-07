@@ -20,17 +20,17 @@ class Location {
   constructor(coordinate, name, description, north, east, south, west, up, down, item1, item2, item3, lock) {
         this.coordinate = coordinate; // Location on map
         this.description = description; // wordy description from looking around
-        this.north = north; // Default directions to closed?
+        this.north = north; 
         this.east = east;
         this.south = south;
         this.west = west;
-        this.up = up;
-        this.down = down;
+        this.up = up;// Default directions to closed?
+        this.down = down;// Default directions to closed?
         this.name = name; // quick name of location
         this.item1 = item1;
         this.item2 = item2;
         this.item3 = item3;
-        this.lock = lock;
+        this.lock = lock; // holds a string that matches a key used to unlock it
   }
 }
 
@@ -60,10 +60,42 @@ return locationArray.push(newLocation)
   13 = locked
  */
 
-// let currentLocation = [z,x,y]; // No longer read. Probably will delete.
-createLocation("start", [0,9,9], "home", "Starting Point", "blocked", undefined, undefined, undefined, undefined, undefined, "key1", undefined, undefined, "key1");
-createLocation("secondPosition",[0,9,10], 'second position.', 'position 2', undefined, undefined , undefined , undefined ,undefined ,undefined, "l", undefined);
-createLocation("cemetary",[0,9,11], 'cemetary', 'An old cemetary lies before you.');
+createLocation(
+  "start", 
+  [0,9,9], 
+  "home", 
+  "Starting Point", 
+  "blocked", 
+  undefined, 
+  undefined, 
+  undefined, 
+  undefined, 
+  undefined, 
+  "key1", 
+  undefined, 
+  undefined, 
+  "key1");
+
+createLocation(
+  "secondPosition",
+  [0,9,10], 
+  'second position.', 
+  'position 2', 
+  undefined, 
+  undefined , 
+  undefined , 
+  undefined ,
+  undefined ,
+  undefined, 
+  "l", 
+  undefined);
+
+createLocation(
+  "cemetary",
+  [0,9,11], 
+  'cemetary', 
+  'An old cemetary lies before you.'
+  );
 
 
 start();
@@ -85,7 +117,7 @@ On the door is a handwritten sign.`;
   let response = await ask(`\nWhat would you like? \nType help for commands.\n`)
   input.push(response);
   input = response.split(" ")
-    console.log(input) 
+    // console.log(input) 
 
 // Help command:
   if (input.includes("help")) {
@@ -213,6 +245,7 @@ else if (input.includes("drop") || input.includes("leave")) {
   }
 }
 
+// This works for unlocking doors, but doesn't work for detecting if there is nothing to unlock
 else if (input.includes("unlock")) {
   // async function take() {
     let i = 0;
@@ -392,23 +425,19 @@ async function drop(item) {
   let i = 0;
   let dropItemQuestion = await ask(`Are you sure you want to drop ${item}?`);
   if (dropItemQuestion == "y" || dropItemQuestion == "yes") {
-    console.log(i)
-    console.log("playerLocation", playerLocation)
-    console.log("locationArray[i].coordinate", locationArray[i].coordinate)
-
     
     // In this section, locationArray[i].coordinate is unable to be read in the nested ifs
     async function search() {
         i++
-        console.log(i)
-        console.log("playerLocation", playerLocation)
+        // console.log(i)
+        // console.log("playerLocation", playerLocation)
         // console.log("locationArray[i].coordinate", locationArray[i].coordinate)
         // Search the locationArray for the existence of the current location...
         // If the currentLocation does not exist, repeat the search and i will increase by one:
         //! if there is a locationArray.coordinate do this... else do something else... place this correctly later::: }
         if (locationArray[i] != undefined) {
           if (i < locationArray.length && JSON.stringify(locationArray[i].coordinate) != JSON.stringify(playerLocation)) {
-          console.log("search :",i)
+          // console.log("search :",i)
             search()
           // If the coordinate has been discovered in the locationArray, display the description.
           } else if (JSON.stringify(locationArray[i].coordinate) == JSON.stringify(playerLocation)) {
@@ -419,10 +448,10 @@ async function drop(item) {
           // Search the locationArray for full item slots and skip them
           // console.log(locationArray[i])
           if (locationArray[i].item1 != undefined) {
-            console.log("I think there's something at item1")
+            // console.log("I think there's something at item1")
             console.log("existing item1", locationArray[i].item1)
             if (locationArray[i].item2 != undefined) {
-              console.log("I think there's something at item2")
+              // console.log("I think there's something at item2")
               if (locationArray[i].item3 != undefined) {
                 console.log("you can't drop anything more here");
                 start()
@@ -430,12 +459,12 @@ async function drop(item) {
                 locationArray[i].item3 = item;
                 
                 // search inventory for the dropItemQuestion and delete it.
-                inventory[inventory.indexOf(item)] = "" 
+                inventory[inventory.indexOf(item)] = undefined 
                 start()
               } 
             } else {
               locationArray[i].item2 = item;
-              inventory[inventory.indexOf(item)] = ""
+              inventory[inventory.indexOf(item)] = undefined
               start()
           } 
         } else {
@@ -454,13 +483,13 @@ async function drop(item) {
           // console.log(i)
           // console.log(`gonna have to build a new location here to drop the item in... how to give the variable a name? Can I base it on the coordinate, or on the item name? Maybe use the item name as the createLocation variable name,`); 
           let newLocation = (`_${playerLocation}`)
-          createLocation(newLocation, playerLocation, "", "nothing special about this area","","","","","","")
-          console.log(locationArray)
+          createLocation(newLocation, playerLocation, undefined, "nothing special about this area",undefined,undefined,undefined,undefined,undefined,undefined)
+          // console.log(locationArray)
           locationArray[locationArray.length-1].item1 = item
           // locationArray[i].item1 = item;
           inventory.splice([inventory.indexOf(item)], 1)
           // start()
-          console.log(locationArray);
+          // console.log(locationArray);
           start();
         }         
   }
@@ -474,24 +503,24 @@ async function drop(item) {
                   console.log("you can't drop anything more here");
                 } else {
                   locationArray[i].item3 = item;
-                  inventory[indexOf(item)] == undefined
+                  inventory[indexOf(item)] = undefined
                   // search inventory for the dropItemQuestion and delete it.
                   inventory
                 }
               } else {
                 locationArray[i].item2 = item;
-                inventory[indexOf(item)] == undefined
-                console.log("item2 final inventory: ", inventory)
-                console.log("item2 final locationArray", locationArray)
+                inventory[indexOf(item)] = undefined
+                // console.log("item2 final inventory: ", inventory)
+                // console.log("item2 final locationArray", locationArray)
               }
             } else {
             locationArray[i].item1 = item;
-            inventory[inventory.indexOf(item)] == undefined
-            console.log("index1 final inventory: ", inventory)
-            console.log("index 1 final locationArray", locationArray)
+            inventory[inventory.indexOf(item)] = undefined
+            // console.log("index1 final inventory: ", inventory)
+            // console.log("index 1 final locationArray", locationArray)
           }
-          console.log("final inventory: ", inventory)
-          console.log("final locationArray", locationArray)
+          // console.log("final inventory: ", inventory)
+          // console.log("final locationArray", locationArray)
       // if (dropItemQuestion == "y" || dropItemQuestion == "yes") {
       //   inventory.push(locationArray[i].item1);
       //   // console.log("inventory: ", inventory);
@@ -519,145 +548,136 @@ async function drop(item) {
   }
 }
 
-async function use(item, change) {
-  console.log(item, change)
-  let i = 0;
+// Broken and not used. Ironic...
+// async function use(item, change) {
+//   console.log(item, change)
+//   let i = 0;
 
-  if (inventory.includes(item)) {
-    // include necessary function in the room object, passing in arguments from use
-  }
+//   if (inventory.includes(item)) {
+//     // include necessary function in the room object, passing in arguments from use
+//   }
 
-  let useItemQuestion = await ask(`Are you sure you want to drop ${item}?`);
-  // if the item is in the inventory, and if the change is something in the location change slot, do the logic
+//   let useItemQuestion = await ask(`Are you sure you want to drop ${item}?`);
+//   // if the item is in the inventory, and if the change is something in the location change slot, do the logic
 
 
-  if (dropItemQuestion == "y" || dropItemQuestion == "yes") {
-    console.log(i)
-    console.log("playerLocation", playerLocation)
-    console.log("locationArray[i].coordinate", locationArray[i].coordinate)
-
+//   if (dropItemQuestion == "y" || dropItemQuestion == "yes") {
     
-    // In this section, locationArray[i].coordinate is unable to be read in the nested ifs
-    async function search() {
-        i++
-        console.log(i)
-        console.log("playerLocation", playerLocation)
-        // console.log("locationArray[i].coordinate", locationArray[i].coordinate)
-        // Search the locationArray for the existence of the current location...
-        // If the currentLocation does not exist, repeat the search and i will increase by one:
-        //! if there is a locationArray.coordinate do this... else do something else... place this correctly later::: }
-        if (locationArray[i] != undefined) {
-          if (i < locationArray.length && JSON.stringify(locationArray[i].coordinate) != JSON.stringify(playerLocation)) {
-          console.log("search :",i)
-            search()
-          // If the coordinate has been discovered in the locationArray, display the description.
-          } else if (JSON.stringify(locationArray[i].coordinate) == JSON.stringify(playerLocation)) {
-          // console.log("eureka!")
-          // console.log("playerLocation", playerLocation)
-          // console.log("locationArray[i].coordinate", locationArray[i].coordinate)
-        // if (JSON.stringify(locationArray[i].coordinate) == JSON.stringify(playerLocation)) {
-          // Search the locationArray for full item slots and skip them
-          // console.log(locationArray[i])
-          if (locationArray[i].item1 != undefined) {
-            console.log("I think there's something at item1")
-            console.log("existing item1", locationArray[i].item1)
-            if (locationArray[i].item2 != undefined) {
-              console.log("I think there's something at item2")
-              if (locationArray[i].item3 != undefined) {
-                console.log("you can't drop anything more here");
-                start()
-              } else { //! may need to add logic here to prevent overwriting existing items // Change the item slot to an array of its own, and then push items to it... later...
-                locationArray[i].item3 = item;
+//     // In this section, locationArray[i].coordinate is unable to be read in the nested ifs
+//     async function search() {
+//         i++
+//         console.log(i)
+//         console.log("playerLocation", playerLocation)
+//         // console.log("locationArray[i].coordinate", locationArray[i].coordinate)
+//         // Search the locationArray for the existence of the current location...
+//         // If the currentLocation does not exist, repeat the search and i will increase by one:
+//         //! if there is a locationArray.coordinate do this... else do something else... place this correctly later::: }
+//         if (locationArray[i] != undefined) {
+//           if (i < locationArray.length && JSON.stringify(locationArray[i].coordinate) != JSON.stringify(playerLocation)) {
+//           console.log("search :",i)
+//             search()
+//           // If the coordinate has been discovered in the locationArray, display the description.
+//           } else if (JSON.stringify(locationArray[i].coordinate) == JSON.stringify(playerLocation)) {
+//           // console.log("eureka!")
+//           // console.log("playerLocation", playerLocation)
+//           // console.log("locationArray[i].coordinate", locationArray[i].coordinate)
+//         // if (JSON.stringify(locationArray[i].coordinate) == JSON.stringify(playerLocation)) {
+//           // Search the locationArray for full item slots and skip them
+//           // console.log(locationArray[i])
+//           if (locationArray[i].item1 != undefined) {
+//             console.log("I think there's something at item1")
+//             console.log("existing item1", locationArray[i].item1)
+//             if (locationArray[i].item2 != undefined) {
+//               console.log("I think there's something at item2")
+//               if (locationArray[i].item3 != undefined) {
+//                 console.log("you can't drop anything more here");
+//                 start()
+//               } else { //! may need to add logic here to prevent overwriting existing items // Change the item slot to an array of its own, and then push items to it... later...
+//                 locationArray[i].item3 = item;
                 
-                // search inventory for the dropItemQuestion and delete it.
-                inventory[inventory.indexOf(item)] = "" 
-                start()
-              } 
-            } else {
-              locationArray[i].item2 = item;
-              inventory[inventory.indexOf(item)] = ""
-              start()
-          } 
-        } else {
-            console.log("here")
-            locationArray[i].item1 = item;
-            inventory.splice([inventory.indexOf(item)], 1)
-            start()
-        }
-      }
-          // search();
-// If the locationArray Length has been exhausted, and i is undefined:
-      } else if (locationArray[i] == undefined){
-          // console.log("hello, hello")
-          // console.log("la", locationArray)
-          // console.log("la I: ", locationArray[i])
-          // console.log(i)
-          // console.log(`gonna have to build a new location here to drop the item in... how to give the variable a name? Can I base it on the coordinate, or on the item name? Maybe use the item name as the createLocation variable name,`); 
-          let newLocation = (`_${playerLocation}`)
-          createLocation(newLocation, playerLocation, "", "nothing special about this area","","","","","","")
-          console.log(locationArray)
-          locationArray[locationArray.length-1].item1 = item
-          // locationArray[i].item1 = item;
-          inventory.splice([inventory.indexOf(item)], 1)
-          // start()
-          console.log(locationArray);
-          start();
-        }         
-  }
+//                 // search inventory for the dropItemQuestion and delete it.
+//                 inventory[inventory.indexOf(item)] = "" 
+//                 start()
+//               } 
+//             } else {
+//               locationArray[i].item2 = item;
+//               inventory[inventory.indexOf(item)] = ""
+//               start()
+//           } 
+//         } else {
+//             console.log("here")
+//             locationArray[i].item1 = item;
+//             inventory.splice([inventory.indexOf(item)], 1)
+//             start()
+//         }
+//       }
+//           // search();
+// // If the locationArray Length has been exhausted, and i is undefined:
+//       } else if (locationArray[i] == undefined){
+//           // console.log("hello, hello")
+//           // console.log("la", locationArray)
+//           // console.log("la I: ", locationArray[i])
+//           // console.log(i)
+//           // console.log(`gonna have to build a new location here to drop the item in... how to give the variable a name? Can I base it on the coordinate, or on the item name? Maybe use the item name as the createLocation variable name,`); 
+//           let newLocation = (`_${playerLocation}`)
+//           createLocation(newLocation, playerLocation, "", "nothing special about this area","","","","","","")
+//           console.log(locationArray)
+//           locationArray[locationArray.length-1].item1 = item
+//           // locationArray[i].item1 = item;
+//           inventory.splice([inventory.indexOf(item)], 1)
+//           // start()
+//           console.log(locationArray);
+//           start();
+//         }         
+//   }
 
 
     
-    if (JSON.stringify(locationArray[i].coordinate) == JSON.stringify(playerLocation)) {
-            if (locationArray[i].item1 != undefined) {
-              if (locationArray[i].item2 != undefined) {
-                if (locationArray[i].item3 != undefined) {
-                  console.log("you can't drop anything more here");
-                } else {
-                  locationArray[i].item3 = item;
-                  inventory[indexOf(item)] == undefined
-                  // search inventory for the dropItemQuestion and delete it.
-                  inventory
-                }
-              } else {
-                locationArray[i].item2 = item;
-                inventory[indexOf(item)] == undefined
-                console.log("item2 final inventory: ", inventory)
-                console.log("item2 final locationArray", locationArray)
-              }
-            } else {
-            locationArray[i].item1 = item;
-            inventory[inventory.indexOf(item)] == undefined
-            console.log("index1 final inventory: ", inventory)
-            console.log("index 1 final locationArray", locationArray)
-          }
-          console.log("final inventory: ", inventory)
-          console.log("final locationArray", locationArray)
-      // if (dropItemQuestion == "y" || dropItemQuestion == "yes") {
-      //   inventory.push(locationArray[i].item1);
-      //   // console.log("inventory: ", inventory);
-      //   locationArray[i].item1 = "";
-      //   // console.log("locationarray: ", locationArray[i].item1)
-      // start();
-      // } else {
-      // start() 
-      // }
-      start();
-    }
-    // If the coordinate hasn't been found at index 0, call the search function.
-    else {
-      // console.log("about to search")
-      search();
-    }
-  }
+//     if (JSON.stringify(locationArray[i].coordinate) == JSON.stringify(playerLocation)) {
+//             if (locationArray[i].item1 != undefined) {
+//               if (locationArray[i].item2 != undefined) {
+//                 if (locationArray[i].item3 != undefined) {
+//                   console.log("you can't drop anything more here");
+//                 } else {
+//                   locationArray[i].item3 = item;
+//                   inventory[indexOf(item)] == undefined
+//                   // search inventory for the dropItemQuestion and delete it.
+//                   inventory
+//                 }
+//               } else {
+//                 locationArray[i].item2 = item;
+//                 inventory[indexOf(item)] == undefined
+//               }
+//             } else {
+//             locationArray[i].item1 = item;
+//             inventory[inventory.indexOf(item)] == undefined
+//           }
+//       // if (dropItemQuestion == "y" || dropItemQuestion == "yes") {
+//       //   inventory.push(locationArray[i].item1);
+//       //   // console.log("inventory: ", inventory);
+//       //   locationArray[i].item1 = "";
+//       //   // console.log("locationarray: ", locationArray[i].item1)
+//       // start();
+//       // } else {
+//       // start() 
+//       // }
+//       start();
+//     }
+//     // If the coordinate hasn't been found at index 0, call the search function.
+//     else {
+//       // console.log("about to search")
+//       search();
+//     }
+//   }
 
 
 
 
 
-  else {
-    start();
-  }
-}
+//   else {
+//     start();
+//   }
+// }
 
 // Movement
 // If the text input is the direction name, and the direction parameter is not blocked, move in that direction
